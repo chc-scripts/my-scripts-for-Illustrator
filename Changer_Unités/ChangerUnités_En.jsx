@@ -1,4 +1,4 @@
-﻿//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*ChangerUnités
 >=----------------------------------------------------------------------------------------------------------------------------------------------------------------
 Author: Christian Condamine - (christian.condamine@laposte.net)
@@ -9,15 +9,15 @@ Author: Christian Condamine - (christian.condamine@laposte.net)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 Utilisation :
 >=----------------------------------------------------------------------------------------------------------------------------------------------------------------
-1.  Ouvrez votre document illustrator.
-2.  Exécutez le script, Fichier → Scripts → ChangerUnités.jsx.
-3.  La boîte de dialogue qui s'ouvre permet de sélectionner l'unité à utiliser.
-4. Elle est alors automatiquement changée dans les préférences d'illustrator en qui concerne les unités générales
-    et de contours.
-5. la boîte de dialogue concernant les unités générales du document en cours s'ouvre alors pour vous permettre
-    de les changer aussi. (car cela ne peut pas être effectué automatiquement).
+1. Open your illustrator document.
+2. Run the script, File → Scripts → ChangeUnits.jsx.
+3. The dialog box that opens allows you to select the unit to use.
+4. It is then automatically changed in Illustrator's preferences regarding general units
+     and outlines.
+5. the dialog box concerning the general units of the current document then opens to allow you
+     change them too. (because this cannot be done automatically).
     
-Au total, cela va plus vite et assure une cohérence entre les préférence du logiciel et du document en cours.
+All in all, it goes faster and ensures consistency between the preferences of the software and the current document.
 */
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //    Dialog Box    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
