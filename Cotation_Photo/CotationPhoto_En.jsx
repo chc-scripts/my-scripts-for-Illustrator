@@ -80,7 +80,7 @@ var nomScript = 'Cotation_Photo',
                                     panFactUtil.orientation = "row";
                                     panFactUtil.alignChildren = "top"
               /////// Colours
-                            var panCouleurs = grpFormats.add ('panel', [0,0,105,60], "Colour")
+                            var panCouleurs = grpFormats.add ('panel', [0,0,105,60], "Color")
                                     var listeCouleurs = panCouleurs.add('DropDownList', [10,15,92,34], ["Blue", "Black", "Yellow", "Magenta", "Cyan","White"]);
                                     listeCouleurs.minimumSize.width = 80;
                                     listeCouleurs.selection = listeCouleurs.selection === null ? 0 : listeCouleurs.selection;
