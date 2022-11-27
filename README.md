@@ -35,11 +35,11 @@ Cotation
 
 CotationPhoto
 -----------------------------------------------------------------------------------------------------
- Transform a straight line into a dimension line and add a text frame to dimension a photo
+ 	Transform a straight line into a dimension line and add a text frame to dimension a photo
 
 Couleur_Calques
 -----------------------------------------------------------------------------------------------------
-Change the working colour of the layers containing the selected objects
+	Change the working colour of the layers containing the selected objects
 
 Echelle
 -----------------------------------------------------------------------------------------------------
@@ -59,9 +59,31 @@ Marges
 	a live preview function inspired by Alexander Ladygin's tutorial
 	(https://ladyginpro.ru/blog/create-preview-in-dialog/).
 
+Nettoyage
+-----------------------------------------------------------------------------------------------------
+	Clear the file in use of a number of obsolete items. Choose via a dialog box to apply one or
+	more of the 16 possible actions to the selection or to the document:
+      		- remove or undo clipping masks
+      		- break links to symbols
+      		- remove styles
+      		- Expand :
+            		> Gradients
+            		> Live paints
+            		> Envelopes
+            		> Appearance
+     		- Clean the pallets:
+            		> Shape
+            		> Shades
+            		> Symbols
+      		- Embed images
+      		- Reduce image resolution
+      		- Delete guides (or place them on a dedicated layer)
+      		- Delete empty layers and sub-layers
+      		- Remove empty text frames, isolated dots and invisible objects
+
 SupprPetitsObjets
 -----------------------------------------------------------------------------------------------------
-Delete objects whose width and/or height are less than the chosen dimension
+	Delete objects whose width and/or height are less than the chosen dimension
 
 
 
