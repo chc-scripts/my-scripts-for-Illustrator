@@ -21,14 +21,15 @@ var boiteDial = new Window("dialog","Choisir format et r\351solution");
 ////  Groupe Format
 var grpFormat = boiteDial.add("group", undefined); 
     grpFormat.orientation = "row"; 
-    grpFormat.alignChildren = ["left","top"]; 
-    grpFormat.spacing = 28 
-    var ddl_Format = grpFormat.add("dropdownlist", [140,15,220,38], [".png","jpg"]);
+    grpFormat.alignChildren = ["left","center"]; 
+    grpFormat.spacing = 28
+    var sttFormat = grpFormat.add("statictext", undefined, "Format"); 
+    var ddl_Format = grpFormat.add("dropdownlist", undefined, [".png","jpg"]);
       ddl_Format.selection = 0; 
 ////  Groupe Résolution
 var grpResol = boiteDial.add("group", undefined); 
        grpResol.orientation = "row"; 
-       grpResol.alignChildren = ["left","top"]; 
+       grpResol.alignChildren = ["left","center"]; 
        var sttResol = grpResol.add("statictext", undefined, "R\351solution"); 
        var edtResol = grpResol.add("edittext", undefined, 300);
              edtResol.characters = 4;
