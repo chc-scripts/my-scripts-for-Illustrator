@@ -867,20 +867,20 @@ function getEmptyLayers(container, arr, comptage) {
 	for (var k=0; k<layers.length; k++) {
         try {
             var ilayer = layers[k];
-            ilayer.canDelete = true; // initialize all layers with deletion flag set to true
-            
-            // process sublayers first
+            ilayer.canDelete = true; // Initialiser sur true la variable "drapeau" de tous les calques
+            // lancer l'action sur les sous_calques d'abord
             if (ilayer.layers.length>0) {
                 getEmptyLayers (ilayer, arr)
             }
             
-            // then process objects in current layer
-            // if layer has a sublayer with objects, deletion flag was previously set to false
-            // ignore this layer and set it's parent layer (container) to false as well, otherwise add to Empty Layers array
+            // puis agir sur les objets du calque actif
+            // Si le calque contient des sous-calques qui contiennent des objets, les drapeau devrait être sur false
+            // ignorer ce sous-calque et régler le drapeau du calque parent sur false, sinon ajouter au tableau des
+            //calques à supprimer
             if (ilayer.pageItems.length==0 && ilayer.canDelete) {
                 arr.push(ilayer);
             }
-            // if layer has objects, set deletion flag to false and its parent layer to false as well
+            // Si le calque contient  des objets, régler son drapeau et celui du calque parent sur false
             else {
                 ilayer.canDelete = false;
                 container.canDelete = false;
