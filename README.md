@@ -85,7 +85,9 @@ SupprPetitsObjets
 -----------------------------------------------------------------------------------------------------
 	Delete objects whose width and/or height are less than the chosen dimension
 
-
-
-
-
+Vecteurs_Vers_Texte
+-----------------------------------------------------------------------------------------------------
+  	Select two objects: 1 GROUP consisting of one or more vectorized letters and the same TEXT
+	in the same font but non-vectorized (regardless of the difference in size and color between
+	the two). After running the script, the text object has replaced the vector group and can
+	therefore be edited in place.
