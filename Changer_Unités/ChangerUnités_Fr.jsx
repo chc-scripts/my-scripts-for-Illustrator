@@ -77,7 +77,7 @@ var btnOk = grpBoutons.add("button", undefined, "Ok");
         } else {
                 app.preferences.setIntegerPreference("text/units",2);
         };
-        lancerAction = false;
+        lancerAction = true;
         };
 var btnAnnuler = grpBoutons.add("button", undefined,  "Annuler", {name: "cancel"});
         btnAnnuler.onClick = function() {lancerAction = false;
