@@ -15,8 +15,9 @@ Utilisation :
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #targetengine main
 var maSelection = app.activeDocument.selection
-if (maSelection.length == 2) {
-app.executeMenuCommand("noCompoundPath");
+if (maSelection.length == 2) { // Check that the selection has only 2 items
+app.executeMenuCommand("noCompoundPath"); // undo any CompoundPathItems
+// Check that the 2 selected elements are indeed a group and a text frame and distinguish them
      if (maSelection[0].typename=="TextFrame"&&maSelection[1].typename=="GroupItem"){
          var monTexte = maSelection[0];
          var monGroupe = maSelection[1];
@@ -29,20 +30,21 @@ app.executeMenuCommand("noCompoundPath");
 } else {
     alert("You have to select non-vectorized text and vectorized text so that script \n replaces the vector group with the text box.");
 };
-monTexte.textRange.horizontalScale = 100;
-var texteTmp_1 = monTexte.duplicate().createOutline();
-var monEchelleV = monGroupe.height / texteTmp_1.height*100;
-    monTexte.resize(monEchelleV,monEchelleV);
-    texteTmp_1.remove();
-var texteTmp_2 = monTexte.duplicate().createOutline();
-    monTexte.left += monGroupe.left - texteTmp_2.left;
-    monTexte.top += monGroupe.top - texteTmp_2.top;
-var diffLargeur = monGroupe.width - texteTmp_2.width;
-var monApproche = (diffLargeur*1000)/(monTexte.textRange.size*(monTexte.textRange.length-1));
-texteTmp_2.remove();
-monTexte.textRange.characterAttributes.tracking = monApproche.toFixed(0);
-trouverCouleurGroupe(monGroupe);
-monGroupe.remove(monGroupe);
+monTexte.textRange.verticalScale = 100; // Rescale text to 100% in case it is distorted vertically
+monTexte.textRange.horizontalScale = 100; // Rescale text to 100% in case it is distorted horizontally
+var texteTmp_1 = monTexte.duplicate().createOutline(); // Duplicate the text frame and vectorize the copy
+var monEchelleV = monGroupe.height / texteTmp_1.height*100; // Find the scale difference between the height of this copy and the height of the selected group
+    monTexte.resize(monEchelleV,monEchelleV); // Resize text to this scale
+    texteTmp_1.remove(); // Delete vectorized copy of text frame
+var texteTmp_2 = monTexte.duplicate().createOutline(); // Duplicate the text frame to its new size and vectorize the copy
+    monTexte.left += monGroupe.left - texteTmp_2.left; // Move the text of the horizontal position difference between this copy and the selected group
+    monTexte.top += monGroupe.top - texteTmp_2.top; // Move the text of the vertical position difference between this copy and the selected group
+var diffLargeur = monGroupe.width - texteTmp_2.width; // Find the difference in width between the group and the vectorized copy of the text
+var monApproche = (diffLargeur*1000)/(monTexte.textRange.size*(monTexte.textRange.length-1)); // Calculate the tracking to apply to correct the width according to this difference
+texteTmp_2.remove(); // remove vectorized copy of text frame
+monTexte.textRange.characterAttributes.tracking = monApproche.toFixed(0); // Assign the tracking
+trouverCouleurGroupe(monGroupe); // Call of the function to find the color of the first item of the group (requires a loop because there can be nested groups)
+monGroupe.remove(monGroupe); // Delete group
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function trouverCouleurGroupe(groupeEnCours){
     for(i=0;i<groupeEnCours.pageItems.length;i++){
