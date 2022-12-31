@@ -32,6 +32,7 @@ app.executeMenuCommand("noCompoundPath"); // undo any CompoundPathItems
 };
 monTexte.textRange.verticalScale = 100; // Rescale text to 100% in case it is distorted vertically
 monTexte.textRange.horizontalScale = 100; // Rescale text to 100% in case it is distorted horizontally
+monTexte.textRange.characterAttributes.tracking = 0; // Reset tracking
 var texteTmp_1 = monTexte.duplicate().createOutline(); // Duplicate the text frame and vectorize the copy
 var monEchelleV = monGroupe.height / texteTmp_1.height*100; // Find the scale difference between the height of this copy and the height of the selected group
     monTexte.resize(monEchelleV,monEchelleV); // Resize text to this scale

@@ -32,6 +32,7 @@ app.executeMenuCommand("noCompoundPath"); // annuler d'éventuels tracés transp
 };
 monTexte.textRange.verticalScale = 100; // Rétablir l'échelle du texte au cas où il serait déformé verticalement
 monTexte.textRange.horizontalScale = 100; // Rétablir l'échelle du texte au cas où il serait déformé horizontalement
+monTexte.textRange.characterAttributes.tracking = 0; // Mise à zéro de l'approche
 var texteTmp_1 = monTexte.duplicate().createOutline(); // Dupliquer le cadre de texte et vectoriser la copie
 var monEchelleV = monGroupe.height / texteTmp_1.height*100; // Trouver la différence d'échelle entre  la hauteur de cette copie et la hauteur du groupe sélectionné
     monTexte.resize(monEchelleV,monEchelleV); // Redimensionner le texte suivant cette échelle
