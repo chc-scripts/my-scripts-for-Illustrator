@@ -24,7 +24,7 @@ var grpFormat = boiteDial.add("group", undefined);
     grpFormat.alignChildren = ["left","center"]; 
     grpFormat.spacing = 28
     var sttFormat = grpFormat.add("statictext", undefined, "Format"); 
-    var ddl_Format = grpFormat.add("dropdownlist", undefined, [".png","jpg"]);
+    var ddl_Format = grpFormat.add("dropdownlist", undefined, [".png",".jpg"]);
       ddl_Format.selection = 0; 
 ////  Groupe Résolution
 var grpResol = boiteDial.add("group", undefined); 
@@ -79,6 +79,7 @@ function exportPNG(num){
     var dest = new File(exportName);
     var type =ExportType.PNG24;
     monFichier.layers[num].hasSelectedArtwork = true;
+    app.executeMenuCommand('group');
     var limites = monFichier.selection[0].visibleBounds
      exportOptions.antiAliasing = true;
      exportOptions.artBoardClipping=false;
@@ -87,6 +88,7 @@ function exportPNG(num){
      exportOptions.verticalScale = 100;
      exportOptions.resolution = maResolution;
     monFichier.imageCapture(dest,limites,exportOptions);
+    app.executeMenuCommand('ungroup');
 };
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //    Lancement process export en jpg    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -105,9 +107,9 @@ function processJPG(monFichier){
             unhideAllUnlocked();
             calqueEnCours.visible=true;
             app.redraw();
-        calqueEnCours.hasSelectedArtwork = true;
-        var calqueActif = monFichier.assets.addFromSelection();
-        calqueActif.assetName = calqueEnCours.name;
+            calqueEnCours.hasSelectedArtwork = true;
+            var calqueActif = monFichier.assets.addFromSelection();
+            calqueActif.assetName = calqueEnCours.name;
             exportItem(calqueActif, monDossier);
          };
      };

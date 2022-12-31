@@ -79,6 +79,7 @@ function exportPNG(num){
     var dest = new File(exportName);
     var type =ExportType.PNG24;
     monFichier.layers[num].hasSelectedArtwork = true;
+    app.executeMenuCommand('group');
     var limites = monFichier.selection[0].visibleBounds
      exportOptions.antiAliasing = true;
      exportOptions.artBoardClipping=false;
@@ -87,6 +88,7 @@ function exportPNG(num){
      exportOptions.verticalScale = 100;
      exportOptions.resolution = maResolution;
     monFichier.imageCapture(dest,limites,exportOptions);
+        app.executeMenuCommand('ungroup');
 };
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //    Launch process export in JPG    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
