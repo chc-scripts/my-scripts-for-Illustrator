@@ -6,7 +6,7 @@ Caracteres_Speciaux
 	Lorsque l’on est dans une zone de texte, il suffit de cliquer sur l’un des boutons pour que
 	le caractère correspondant apparaisse à l’endroit du curseur.
 
-ChangerUnités
+ChangerUnites
 -----------------------------------------------------------------------------------------------------
 	Quickly change ruler units, stroke units and in option, body text units in Illustrator
 	prefs and the active document
