@@ -23,19 +23,19 @@ Conversion
 Cotation
 -----------------------------------------------------------------------------------------------------
 	The script allows you to add in Adobe Illustrator:
-    	- a horizontal and / or vertical dimension to the selection of an objet or a group of objects.
-    	- or an aligned dimension to the direct selection of segment
+    	- a horizontal and / or vertical dimension to the selection of an object or a group of objects
+    	- or an aligned dimension to the direct selection of a segment.
     	
 		It allows to choose also (in particular via a real-time preview):
 		- the scale
 		- the position of the dimension (above, below, etc.)
-		- the position of the reference of the quotation value for small objects
+		- the position of the reference of the dimension value for small objects
 		- the symbol used
-		- the color of the quotation
+		- the color of the dimension 
 		- the length of the attachment lines
 		- the unit
 		- the size of the dimensions and all its components (value, symbol, attachment
-		lines, dimension lines).
+		  lines, dimension lines).
 
 CotationPhoto
 -----------------------------------------------------------------------------------------------------
@@ -43,18 +43,29 @@ CotationPhoto
 
 Couleur_Calques
 -----------------------------------------------------------------------------------------------------
-	Change the working colour of the layers containing the selected objects
+	Change the working colour of the layers and sub layers containing the selected objects
 
 Echelle
 -----------------------------------------------------------------------------------------------------
-	The script allows:
+	With this script:
 		- Retrieve the scale factor between two selected objects
 		- Then select one or more other objects to decrease or increase their size according
 			to the scale factor previously acquired.
 
 ExportChoixdpi
 -----------------------------------------------------------------------------------------------------
-	Export each layer in a separate file with choice of its resolution
+	Export each layer in a separate file (.png or .jpg) with choice of its resolution
+
+JoinOverlap
+-----------------------------------------------------------------------------------------------------
+	Inteface modification of an original 2017 script by Mads Wolff
+	(JOIN PATHS WITH OVERLAPPING POINTS)
+	The user enters a tolerance for the overlapping points.
+            - Isolated points are deleted.
+            - Overlapping points on the same path are merged.
+            - Open paths with overlapping points are joined.
+        Only selected paths are affected.
+        Groups are supported, but compound paths are not.
 
 Marges
 -----------------------------------------------------------------------------------------------------
