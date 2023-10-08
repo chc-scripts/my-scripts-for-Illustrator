@@ -56,16 +56,19 @@ ExportChoixdpi
 -----------------------------------------------------------------------------------------------------
 	Export each layer in a separate file (.png or .jpg) with choice of its resolution
 
+Hachures
+-----------------------------------------------------------------------------------------------------
+	Add hatching to the selected object (path or compound path). The values entered in the dialog
+	box are retained in a .json file to be found the next time the script is launched.
+
 JoinOverlap
 -----------------------------------------------------------------------------------------------------
-	Inteface modification of an original 2017 script by Mads Wolff
-	(JOIN PATHS WITH OVERLAPPING POINTS)
-	The user enters a tolerance for the overlapping points.
+	Inteface modification of an original 2017 script by Mads Wolff (JOIN PATHS WITH OVERLAPPING
+	POINTS). The user enters a tolerance for the overlapping points.
             - Isolated points are deleted.
             - Overlapping points on the same path are merged.
             - Open paths with overlapping points are joined.
-        Only selected paths are affected.
-        Groups are supported, but compound paths are not.
+        Only selected paths are affected. Groups are supported, but compound paths are not.
 
 Marges
 -----------------------------------------------------------------------------------------------------
