@@ -4,8 +4,9 @@
 Author: Christian Condamine - (christian.condamine@laposte.net)
 >=----------------------------------------------------------------------------------------------------------------------------------------------------------------
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-Add hatching to the selected object (path or compound path). The values entered in the dialog box are retained in a .json
-file to be found the next time the script is launched.
+This script allows you to add hatching to the selected object (path or compoundpath). A preview function allows you to
+view live changes related to settings. The values entered in the dialog box are saved in a .json file to be reloaded on
+the next launch of the script.
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 */
 #targetengine 'main'
@@ -21,7 +22,7 @@ var nomScript = 'Hachures',
     monFichier = app.activeDocument;
     selection = monFichier.selection;
     var nbSel = selection.length;
-    var perim,x0,y0,L0,H0,typeObj=0,couleur,coulParDefaut;
+    typeObj=0
     if (nbSel === 1){
         coulParDefaut = new RGBColor();coulParDefaut.red = 0;coulParDefaut.green = 0;coulParDefaut.blue = 0;
             if(selection[0].typename === "PathItem"){
@@ -47,16 +48,15 @@ var nomScript = 'Hachures',
                     y0 = selection[0].top;
                     L0 = selection[0].width;
                     H0 = selection[0].height;
-
+     defaire = false;
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
 //     Dialog box
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
-////// Load data saved in a previous session
       boiteDial = new Window ('dialog', {en:"Hatch", fr:"Hachurer"});
       boiteDial.orientation = "column";
       boiteDial.alignChildren =  ["fill", "center"];
       boiteDial.alignment = "left";
-      //==  Groupe Espacement
+      //==  Spacing Group
       var grpEspacement = boiteDial.add('group');
             grpEspacement.orientation = "row";
             grpEspacement.spacing = 3;
@@ -67,7 +67,7 @@ var nomScript = 'Hachures',
             txtEspacement.size = [60, 23];
       var lblUnitEsp = grpEspacement.add ("statictext", undefined, 'mm');
             lblUnitEsp.size = [25, 18];
-      //==  Groupe Inclinaison
+      //==  Gradient Group
       var grpAngle = boiteDial.add('group');
             grpAngle.orientation = "row";
             grpAngle.spacing = 3;
@@ -78,7 +78,7 @@ var nomScript = 'Hachures',
             txtAngle.size = [60, 23]; 
       var lblUnitAngle = grpAngle.add ("statictext", undefined, {en:"Degrees", fr:"degr\351s"});
             lblUnitAngle.size = [50, 18];
-      //==  Groupe Epaisseur trait
+      //==  ThicknessGroup
       var grpEpTrait = boiteDial.add('group');
             grpEpTrait.orientation = "row";
             grpEpTrait.spacing = 3;
@@ -89,29 +89,32 @@ var nomScript = 'Hachures',
             txtEpTrait.size = [60, 23];
       var lblUnitEpTrait = grpEpTrait.add ("statictext", undefined, 'mm');
             lblUnitEpTrait.size = [35, 18];
-      //==  Option lignes croisées
+      //==  Keeping Color group
       var ckbConserCoul = boiteDial.add("checkbox", undefined, {en:"Preserve color", fr:"Conserver couleur"});
             ckbConserCoul.alignment = "left";
       var grpBoutons = boiteDial.add('group');
             grpBoutons.orientation = "row";
             grpBoutons.alignChildren =  ["fill", "center"];
       var btnOk = grpBoutons.add('button', undefined, 'OK', {name: 'ok'});
-                  btnOk.onClick = function () { try {espacement = parseFloat(txtEspacement.text*2.834645);
-                                                                       epTrait = parseFloat(txtEpTrait.text*2.834645);
-                                                                       angle = parseFloat(txtAngle.text);
-                                                                       ConserCoul = ckbConserCoul.value
-                                                                       action(perim,x0,y0,L0,H0,typeObj,couleur);
-                                                                  } catch (e) {
-                                                                      alert(e);
-                                                                  };
-                                                                  boiteDial.close();
-                                                          };
-      var btnAnnul = grpBoutons.add('button', undefined, {en:"Cancel", fr:"Annuler"}, {name: 'cancel'});
-      btnAnnul.onClick = function () {boiteDial.close();};
-      boiteDial.onClose = function() {sauverParametres(txtEspacement,txtAngle,txtEpTrait,ckbConserCoul==='true')};
+      var btnAnnuler = grpBoutons.add('button', undefined, {en:"Cancel", fr:"Annuler"}, {name: 'cancel'});
+      //---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+     txtEspacement.onChange = function() {majApercu();};
+     txtAngle.onChange = function() {majApercu();};
+     txtEpTrait.onChange = function() {majApercu();};
+     ckbConserCoul.onClick =  function() {majApercu();};
+     btnOk.onClick = function () {valider(); boiteDial.close();};
+     btnAnnuler.onClick = function() {  if (defaire) {
+                                                            monFichier.selection[0].remove();
+                                                            gBN(typeObj,"baseSelection").selected = true;
+                                                            defaire = false;
+                                                        };
+                                                    boiteDial.close();}
+      boiteDial.onClose = function() {sauverParametres()};
+      //---------------------------------------------------------------------------------------------------------------------------------------------------------------------
       verifDossierParam();
-      chargerParametres (txtEspacement,txtAngle,txtEpTrait,ckbConserCoul.value); 
+      chargerParametres ();
       boiteDial.center();
+      majApercu();
       boiteDial.show();
               } else {
                     alert(localize({en:"You must select one path or one compound path.", fr:"La s\351lection doit \352tre compos\351e d\un trac\351ou d'un trac\351 transparent"}));
@@ -119,12 +122,34 @@ var nomScript = 'Hachures',
      } else {
         alert(localize({en:"You must select one path or one compound path.", fr:"La s\351lection doit \352tre compos\351e d\un trac\351ou d'un trac\351 transparent"}));
      };
- // } ;
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
-  function action(perim,x0,y0,L0,H0,typeObj,couleur){
+function majApercu() {
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
+    if (defaire) {
+       monFichier.selection[0].remove();
+       monFichier.selection = null;
+       gBN(typeObj,"baseSelection").selected = true;
+    }else{
+        defaire = true;
+        app.redraw();
+    };
+    action()
+    app.redraw();
+};
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
+function recueilDonnees() {
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
+    espacement = parseFloat(txtEspacement.text*2.834645);
+    epTrait = parseFloat(txtEpTrait.text*2.834645);
+    angle = parseFloat(txtAngle.text);
+    ConserCoul = ckbConserCoul.value
+};
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
+  function action(){
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
+    recueilDonnees();
     app.copy();
-    app.executeMenuCommand('pasteInPlace')
+    app.executeMenuCommand('pasteInPlace');
     selection[0].name = "copieBaseSelection";
     if(selection[0].typename === "PathItem"){
             selection[0].filled = true;
@@ -168,12 +193,12 @@ var nomScript = 'Hachures',
     app.executeMenuCommand('compoundPath');
     gBN("G","grpHachures").selected = true;
     app.executeMenuCommand('ungroup');
-     if (typeObj =="P"){app.executeMenuCommand('ungroup')};
+     if (typeObj =="P"){app.executeMenuCommand('ungroup');};
     app.executeMenuCommand('Make Planet X');
     app.executeMenuCommand('Expand Planet X');
     app.executeMenuCommand('ungroup');
     var j=k=0;
-            for (j;j<2;j++){
+           for (j;j<2;j++){
                        if(app.activeDocument.selection[j].pageItems[0].typename == "CompoundPathItem"){
                            k=j
                       };
@@ -182,11 +207,6 @@ var nomScript = 'Hachures',
                       };
            };
     app.activeDocument.selection[k].remove();
-    monFichier.selection = null;
-    gBN(typeObj,"baseSelection").selected = true;
-    app.executeMenuCommand('sendForward');
-    app.executeMenuCommand('sendForward');
-    monFichier.selection = null;
 };
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
 function gBN(typeObj,objet) {
@@ -233,4 +253,13 @@ function chargerParametres() {
             } catch (e) {}
         paramHach.close();
     };
+};
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
+function valider() {
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
+    monFichier.selection = null;
+    gBN(typeObj,"baseSelection").selected = true;
+    app.executeMenuCommand('sendForward');
+    app.executeMenuCommand('sendForward');
+    monFichier.selection = null;
 };
