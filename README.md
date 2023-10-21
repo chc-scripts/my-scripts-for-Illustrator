@@ -26,7 +26,7 @@ Cotation
     	- a horizontal and / or vertical dimension to the selection of an object or a group of objects
     	- or an aligned dimension to the direct selection of a segment.
     	
-		It allows to choose also (in particular via a real-time preview):
+		It allows you to choose also (in particular via a real-time preview):
 		- the scale
 		- the position of the dimension (above, below, etc.)
 		- the position of the reference of the dimension value for small objects
@@ -58,12 +58,12 @@ ExportChoixdpi
 
 Hachures
 -----------------------------------------------------------------------------------------------------
-	Add hatching to the selected object (path or compound path). The values entered in the dialog
-	box are retained in a .json file to be found the next time the script is launched.
+	Add vector hatches to the selected object (path or compound path). The values entered in the
+	dialog box are retained in a .json file to be found the next time the script is launched.
 
 JoinOverlap
 -----------------------------------------------------------------------------------------------------
-	Inteface modification of an original 2017 script by Mads Wolff (JOIN PATHS WITH OVERLAPPING
+	Interface modification of an original 2017 script by Mads Wolff (JOIN PATHS WITH OVERLAPPING
 	POINTS). The user enters a tolerance for the overlapping points.
             - Isolated points are deleted.
             - Overlapping points on the same path are merged.
