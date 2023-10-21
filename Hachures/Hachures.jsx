@@ -23,8 +23,7 @@ var nomScript = 'Hachures',
         name: nomScript + '_param.json',
         folder: Folder.myDocuments + '/CC_Scripts/'
     };
-    monFichier = app.activeDocument;
-    selection = monFichier.selection;
+    selection = app.activeDocument.selection;
     monCalque = selection[0].layer
     var nbSel = selection.length;
     typeObj=0
@@ -114,7 +113,7 @@ var nomScript = 'Hachures',
      ckbConserCoul.onClick =  function() {majApercu();};
      btnOk.onClick = function () {valider(); boiteDial.close();};
      btnAnnuler.onClick = function() {  if (defaire) {
-                                                            monFichier.selection[0].remove();
+                                                            app.activeDocument.selection[0].remove();
                                                             gBN(typeObj,"baseSelection").selected = true;
                                                             defaire = false;
                                                         };
@@ -136,8 +135,8 @@ var nomScript = 'Hachures',
 function majApercu() {
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
     if (defaire) {
-       monFichier.selection[0].remove();
-       monFichier.selection = null;
+       app.activeDocument.selection[0].remove();
+       app.activeDocument.selection = null;
        gBN(typeObj,"baseSelection").selected = true;
     }else{
         defaire = true;
@@ -196,7 +195,7 @@ function recueilDonnees() {
             masque.name = "masque";
             masque.setEntirePath([[limGH_0,limGH_1], [limGH_0, limGH_3], [limGH_2, limGH_3], [limGH_2, limGH_1]]);
             masque.closed = true;
-    monFichier.selection = null;
+    monCalque.selection = null;
     var groupeTemp = monCalque.groupItems.add();
     gBN(typeObj,"copieBaseSelection").move(groupeTemp, ElementPlacement.PLACEATBEGINNING)
     gBN("P","masque").move(groupeTemp, ElementPlacement.PLACEATBEGINNING)
@@ -223,11 +222,11 @@ function recueilDonnees() {
 function gBN(typeObj,objet) {
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
     if (typeObj === "C") {
-        monItem = monFichier.compoundPathItems.getByName(objet);
+        monItem = monCalque.compoundPathItems.getByName(objet);
     }else if (typeObj === "G") {
-        monItem = monFichier.groupItems.getByName(objet);
+        monItem = monCalque.groupItems.getByName(objet);
     }else{
-        monItem = monFichier.pathItems.getByName(objet);
+        monItem = monCalque.pathItems.getByName(objet);
     };
     return (monItem);
 };
@@ -268,8 +267,8 @@ function chargerParametres() {
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
 function valider() {
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
-    monFichier.selection = null;
+    monCalque.selection = null;
     gBN(typeObj,"baseSelection").selected = true;
     app.executeMenuCommand('sendForward');
-    monFichier.selection = null;
+    monCalque.selection = null;
 };
