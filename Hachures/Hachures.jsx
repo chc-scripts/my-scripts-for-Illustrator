@@ -4,9 +4,13 @@
 Author: Christian Condamine - (christian.condamine@laposte.net)
 >=----------------------------------------------------------------------------------------------------------------------------------------------------------------
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-This script allows you to add hatching to the selected object (path or compoundpath). A preview function allows you to
-view live changes related to settings. The values entered in the dialog box are saved in a .json file to be reloaded on
-the next launch of the script.
+En:     This script allows you to add vector hatches to the selected object (path or compoundpath). A preview function
+            allows you to view live changes related to settings. The values entered in the dialog box are saved in a .json file to
+            be reloaded on the next launch of the script.
+>=----------------------------------------------------------------------------------------------------------------------------------------------------------------
+Fr ;      Ce script permet d’ajouter des hachures vectorielles à l’objet sélectionné (tracé ou tracé transparent). Une fonction
+            d’aperçu permet de visualiser en direct les changements liés aux réglages. Les valeurs entrées dans la boite de
+            dialogue sont conservées dans un fichier .json pour être rechargées au lancement suivant du script.
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 */
 #targetengine 'main'
@@ -21,6 +25,7 @@ var nomScript = 'Hachures',
     };
     monFichier = app.activeDocument;
     selection = monFichier.selection;
+    monCalque = selection[0].layer
     var nbSel = selection.length;
     typeObj=0
     if (nbSel === 1){
@@ -29,8 +34,11 @@ var nomScript = 'Hachures',
                 typeObj = "P"
                     if(selection[0].stroked===true){
                             couleur = selection[0].strokeColor;
+                            selection[0].filled = false;
                     }else{
                             couleur = selection[0].fillColor;
+                            selection[0].filled = false;
+                            selection[0].strokeColor = couleur;
                     };
             };
             if(selection[0].typename === "CompoundPathItem"){
@@ -43,6 +51,7 @@ var nomScript = 'Hachures',
             };
             if (typeObj !=0){
                     selection[0].name = "baseSelection";
+                    
                     perim = parseFloat((selection[0].width*2+selection[0].height).toFixed(0));
                     x0 = selection[0].left;
                     y0 = selection[0].top;
@@ -52,11 +61,12 @@ var nomScript = 'Hachures',
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
 //     Dialog box
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
+//==  Charger les données enregistrées à la précédente session
       boiteDial = new Window ('dialog', {en:"Hatch", fr:"Hachurer"});
       boiteDial.orientation = "column";
       boiteDial.alignChildren =  ["fill", "center"];
       boiteDial.alignment = "left";
-      //==  Spacing Group
+      //==  Groupe Espacement
       var grpEspacement = boiteDial.add('group');
             grpEspacement.orientation = "row";
             grpEspacement.spacing = 3;
@@ -67,7 +77,7 @@ var nomScript = 'Hachures',
             txtEspacement.size = [60, 23];
       var lblUnitEsp = grpEspacement.add ("statictext", undefined, 'mm');
             lblUnitEsp.size = [25, 18];
-      //==  Gradient Group
+      //==  Groupe Inclinaison
       var grpAngle = boiteDial.add('group');
             grpAngle.orientation = "row";
             grpAngle.spacing = 3;
@@ -78,7 +88,7 @@ var nomScript = 'Hachures',
             txtAngle.size = [60, 23]; 
       var lblUnitAngle = grpAngle.add ("statictext", undefined, {en:"Degrees", fr:"degr\351s"});
             lblUnitAngle.size = [50, 18];
-      //==  ThicknessGroup
+      //==  Groupe Epaisseur trait
       var grpEpTrait = boiteDial.add('group');
             grpEpTrait.orientation = "row";
             grpEpTrait.spacing = 3;
@@ -89,7 +99,7 @@ var nomScript = 'Hachures',
             txtEpTrait.size = [60, 23];
       var lblUnitEpTrait = grpEpTrait.add ("statictext", undefined, 'mm');
             lblUnitEpTrait.size = [35, 18];
-      //==  Keeping Color group
+      //==  Option prendre la couleur de l'objet sélectionné
       var ckbConserCoul = boiteDial.add("checkbox", undefined, {en:"Preserve color", fr:"Conserver couleur"});
             ckbConserCoul.alignment = "left";
       var grpBoutons = boiteDial.add('group');
@@ -151,6 +161,7 @@ function recueilDonnees() {
     app.copy();
     app.executeMenuCommand('pasteInPlace');
     selection[0].name = "copieBaseSelection";
+
     if(selection[0].typename === "PathItem"){
             selection[0].filled = true;
             selection[0].stroked = false;
@@ -160,7 +171,7 @@ function recueilDonnees() {
                     selection[0].pathItems[n].stroked = false;
             };
      };
-   var grpHachures = monFichier.groupItems.add();
+   var grpHachures = monCalque.groupItems.add();
    grpHachures.name = "grpHachures";
    var lignes = new Array();
    for (i=0;i<(perim)/espacement;i++){
@@ -181,12 +192,12 @@ function recueilDonnees() {
     var limGH_1=grpHachures.geometricBounds[1]+10;
     var limGH_2=grpHachures.geometricBounds[2]+10;
     var limGH_3=grpHachures.geometricBounds[3]-10;
-    var masque = monFichier.pathItems.add();
+    var masque = monCalque.pathItems.add();
             masque.name = "masque";
             masque.setEntirePath([[limGH_0,limGH_1], [limGH_0, limGH_3], [limGH_2, limGH_3], [limGH_2, limGH_1]]);
             masque.closed = true;
     monFichier.selection = null;
-    var groupeTemp = monFichier.groupItems.add();
+    var groupeTemp = monCalque.groupItems.add();
     gBN(typeObj,"copieBaseSelection").move(groupeTemp, ElementPlacement.PLACEATBEGINNING)
     gBN("P","masque").move(groupeTemp, ElementPlacement.PLACEATBEGINNING)
     groupeTemp.selected = true;
@@ -259,7 +270,6 @@ function valider() {
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
     monFichier.selection = null;
     gBN(typeObj,"baseSelection").selected = true;
-    app.executeMenuCommand('sendForward');
     app.executeMenuCommand('sendForward');
     monFichier.selection = null;
 };
