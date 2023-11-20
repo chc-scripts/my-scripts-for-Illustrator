@@ -50,7 +50,6 @@ var nomScript = 'Hachures',
             };
             if (typeObj !=0){
                     selection[0].name = "baseSelection";
-                    
                     perim = parseFloat((selection[0].width*2+selection[0].height).toFixed(0));
                     x0 = selection[0].left;
                     y0 = selection[0].top;
@@ -111,7 +110,7 @@ var nomScript = 'Hachures',
      txtAngle.onChange = function() {majApercu();};
      txtEpTrait.onChange = function() {majApercu();};
      ckbConserCoul.onClick =  function() {majApercu();};
-     btnOk.onClick = function () {valider(); boiteDial.close();};
+     btnOk.onClick = function () {valider();boiteDial.close();};
      btnAnnuler.onClick = function() {  if (defaire) {
                                                             app.activeDocument.selection[0].remove();
                                                             gBN(typeObj,"baseSelection").selected = true;
@@ -158,10 +157,10 @@ function recueilDonnees() {
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
     recueilDonnees();
     app.copy();
-    app.executeMenuCommand('pasteInPlace');
+    app.executeMenuCommand('pasteFront');
     selection[0].name = "copieBaseSelection";
 
-    if(selection[0].typename === "PathItem"){
+    if(selection[0].typename == "PathItem"){
             selection[0].filled = true;
             selection[0].stroked = false;
     }else{
@@ -267,8 +266,12 @@ function chargerParametres() {
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
 function valider() {
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
-    monCalque.selection = null;
-    gBN(typeObj,"baseSelection").selected = true;
-    app.executeMenuCommand('sendForward');
-    monCalque.selection = null;
+   app.activeDocument.selection = null;
+   gBN(typeObj,"baseSelection").selected = true;
+    selection[0].name = "";
+    perim = "";
+    x0 = "";
+    y0 = "";
+    L0 = "";
+    H0 = "";
 };
