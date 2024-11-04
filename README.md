@@ -45,6 +45,11 @@ Couleur_Calques
 -----------------------------------------------------------------------------------------------------
 	Change the working colour of the layers and sub layers containing the selected objects
 
+DessDuss
+-----------------------------------------------------------------------------------------------------
+	Displays a flotting palette that allows you to quickly change the thickness, color and line
+	type of the selected path.
+
 Echelle
 -----------------------------------------------------------------------------------------------------
 	With this script:
@@ -98,6 +103,10 @@ Nettoyage
       		- Delete guides (or place them on a dedicated layer)
       		- Delete empty layers and sub-layers
       		- Remove empty text frames, isolated dots and invisible objects
+
+NumeroterLignes
+-----------------------------------------------------------------------------------------------------
+	Add a number in front of each line of the selected text frame.
 
 SupprPetitsObjets
 -----------------------------------------------------------------------------------------------------
