@@ -1,5 +1,5 @@
 Caracteres_Speciaux
------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------
 	Affiche une palette flottante qui permet, lors de la saisie de texte dans Illustrator, d’accéder
 	facilement à des caractères spéciaux fréquemment utilisés en français mais qui ne sont
 	pas directement accessibles, comme, par exemple, certaines majuscules accentuées.
@@ -7,21 +7,21 @@ Caracteres_Speciaux
 	le caractère correspondant apparaisse à l’endroit du curseur.
 
 ChangerUnités
------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------
 	Quickly change ruler units, stroke units and in option, body text units in Illustrator
 	prefs and active document
 
 CodeCharacter
------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------
 	A simple dialog box allowing to find the unicode or ascii code of a character and vice versa.
 
 Conversion
------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------
 	This script is reduced to a dialog box allowing to enter a value in a chosen unit and to
 	obtain in return its conversion in another unit.
 
 Cotation
------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------
 	The script allows you to add in Adobe Illustrator:
     	- a horizontal and / or vertical dimension to the selection of an object or a group of objects
     	- or an aligned dimension to the direct selection of a segment.
@@ -38,52 +38,63 @@ Cotation
 		  lines, dimension lines).
 
 CotationPhoto
------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------
  	Transform a straight line into a dimension line and add a text frame to dimension a photo
 
 Couleur_Calques
------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------
 	Change the working colour of the layers and sub layers containing the selected objects
 
 DessDuss
------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------
 	Displays a flotting palette that allows you to quickly change the thickness, color and line
 	type of the selected path.
 
 Echelle
------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------
 	With this script:
 		- Retrieve the scale factor between two selected objects
 		- Then select one or more other objects to decrease or increase their size according
 			to the scale factor previously acquired.
 
 ExportChoixdpi
------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------
 	Export each layer in a separate file (.png or .jpg) with choice of its resolution
 
 Hachures
------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------
 	Add vector hatches to the selected object (path or compound path). The values entered in the
 	dialog box are retained in a .json file to be found the next time the script is launched.
 
 JoinOverlap
------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------
 	Interface modification of an original 2017 script by Mads Wolff (JOIN PATHS WITH OVERLAPPING
 	POINTS). The user enters a tolerance for the overlapping points.
-            - Isolated points are deleted.
-            - Overlapping points on the same path are merged.
-            - Open paths with overlapping points are joined.
-        Only selected paths are affected. Groups are supported, but compound paths are not.
+           		 - Isolated points are deleted.
+            		- Overlapping points on the same path are merged.
+           		 - Open paths with overlapping points are joined.
+        	Only selected paths are affected. Groups are supported, but compound paths are not.
+
+LimSel
+-------------------------------------------------------------------------------------------------------------------------------
+	This script allows you to draw the boundaries of the current selection, choose its color, and
+	adjust the size of its elements.
+	Two options are available:
+		- "All" corresponds to the selection of one or more objects with the black arrow.
+		In addition to the selection frame, the center points of the objects are drawn,
+		as well as the baseline of text boxes, including when "entering groups."
+		- "Each" replaces the drawing of the selection frame with drawing the anchor
+		points and handles (for those that have them)..
 
 Marges
------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------
       	This script is a combination of 2 scripts created by MulaRahul, addMargigin.jsx and
 	AddPadding.jsx (https://github.com/mulaRahul/illustrator-scripts) to which is added
 	a live preview function inspired by Alexander Ladygin's tutorial
 	(https://ladyginpro.ru/blog/create-preview-in-dialog/).
 
 Nettoyage
------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------
 	Clear the file in use of a number of obsolete items. Choose via a dialog box to apply one or
 	more of the 16 possible actions to the selection or to the document:
       		- remove or undo clipping masks
@@ -105,15 +116,16 @@ Nettoyage
       		- Remove empty text frames, isolated dots and invisible objects
 
 NumeroterLignes
------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------
 	Add a number in front of each line of the selected text frame.
 
 SupprPetitsObjets
------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------
 	Delete objects whose width and/or height are less than the chosen dimension
 
 Vecteurs_Vers_Texte
------------------------------------------------------------------------------------------------------
-  	Select two objects: one vectorized character or a group of vectorized characters and the same character(s) in the
-	same font but non-vectorized (regardless of the difference in size and color between the two).
-	After running the script, the text object has replaced the vector group and can therefore be edited in place.
+-------------------------------------------------------------------------------------------------------------------------------
+  	Select two objects: one vectorized character or a group of vectorized characters and the same
+	character(s) in the 	same font but non-vectorized (regardless of the difference in size and
+	color between the two). After running the script, the text object has replaced the vector
+	group and can therefore be edited in place.
