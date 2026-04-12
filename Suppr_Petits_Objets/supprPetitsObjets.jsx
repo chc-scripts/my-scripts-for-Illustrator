@@ -1,212 +1,304 @@
-﻿////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/*SupprPetitsObjets
+﻿/*SupprPetitsObjets
 >=-----------------------------------------------------------------------------------------------------------------------------------------
 Author: Christian Condamine - (christian.condamine@laposte.net)
 >=-----------------------------------------------------------------------------------------------------------------------------------------
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-Delete objects whose width and/or height are less than the chosen dimension
+En : Delete selected objects whose width and/or height are less than the chosen dimension including if
+they are a part of a compounnd path item.
+>=-----------------------------------------------------------------------------------------------------------------------------------------
+Fr :Supprimer les objets sélectionnés dont la largeur et/ou la hauteur sont inférieures à la dimension
+choisie y compris s'ils sont inclus dans des tracés transparents.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 */
 #targetengine 'main'
+app.preferences.setBooleanPreference('ShowExternalJSXWarning', false); // Fix drag and drop a .jsx file
 $.localize = true;
 $.locale = null;
 if($.locale.substr(0,2) != "fr"){$.locale = "en"};
-// Declare variables for the active document
-monFichier = app.activeDocument;
-maSelection = monFichier.selection;
-comptage = 0;
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//    Dialog Box  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-var boiteDial = new Window("dialog", {en:"Delete small objects", fr:"Suppression petits objets"}); 
-    boiteDial.orientation = "column"; 
-    boiteDial.alignChildren = ["left","top"]; 
-//// Panel_1
-var Panneau1 = boiteDial.add("panel", [0,0,198,150], {en:"Smaller than", fr:"Inf\351rieurs \340"}); 
-    Panneau1.orientation = "column"; 
-    Panneau1.alignChildren = ["left","top"]; 
-/////// Width_Group
-var groupeLargeur = Panneau1.add("group", [5,5,180,50]); 
-    groupeLargeur.orientation = "row"; 
-    groupeLargeur.alignChildren = ["left","center"]; 
-var sttLargeur = groupeLargeur.add("statictext", [5,15,55,40], {en:"Width: ", fr:"Largeur "}); 
-var edtValLargeur = groupeLargeur.add('edittext',[57,15,101,40],0.2);
-var localiseUnit = {en:"inches", fr:"pouces"};
-var lstUnit = groupeLargeur.add("dropdownlist", [106,15,175,40], ["mm",localiseUnit,"pixels"]); 
-        lstUnit.selection = 0; 
-/////// Divider_1
-var diviseur_1 = Panneau1.add('panel', [8,55,180,57], undefined);
-/////// And_Or_Group
-var groupeEtOu = Panneau1.add("group", [5,62,168,88]); 
-    groupeEtOu.orientation = "row"; 
-    groupeEtOu.alignChildren = ["left","center"]; 
-var opEt = groupeEtOu.add("radiobutton", [5,5,49,20], {en:"And", fr:"Et"}); 
-var opOu = groupeEtOu.add("radiobutton", [54,5,91,20], {en:"Or", fr:"Ou"}); 
-    opOu.value = true; 
-/////// Divider_2
-var diviseur_2 = Panneau1.add('panel', [8,93,1/0,95], undefined);
-/////// Height_Group
-var groupeHauteur = Panneau1.add("group", [5,100,173,135],); 
-var sttHauteur = groupeHauteur.add("statictext", [5,5,55,30], {en:"Height:", fr:"Hauteur"}); 
-var edtValHauteur = groupeHauteur.add('edittext',[57,5,101,30],""); 
-var reprUnit = groupeHauteur.add("statictext", [106,5,169,30], lstUnit.selection.text);
-//// Panel_2
-var Panneau2 = boiteDial.add("panel", [0,160,198,240], {en:"Apply to:", fr:"Appliquer \340 :"}); 
-    Panneau2.orientation = "column"; 
-    Panneau2.alignChildren = ["left","top"]; 
-var rdmaSelection = Panneau2.add("radiobutton", [10,15,210,40], {en:"the selection", fr:"la s\351lection"});
-var rdmonDoc = Panneau2.add("radiobutton", [10,45,220,72], {en:"All in the document", fr:"tout le document"});
-rdmaSelection.value = true;
-monChoixSelect = true;
-//// Panel_3
-var Panneau3 = boiteDial.add("panel", [0,160,198,200], {en:"Number of deleted objects: ", fr: "Nb objets supprim\351s : "}); 
-    Panneau3.orientation = "row"; 
-    Panneau3.alignChildren = ["left","top"];
-    Panneau3.graphics.backgroundColor = Panneau3.graphics.newBrush (Panneau3.graphics.BrushType.SOLID_COLOR,[0.4,0.5,0.4]);
-var monCompteur = Panneau3.add("statictext", [15,10,50,25], "");
-/////// User_Actions
-edtValLargeur.onChange = function(){majComptage()};
-lstUnit.onChange = function(){reprUnit.text=lstUnit.selection.text
-                                                majComptage()};                     
-opEt.onClick = function(){majComptage()};
-opOu.onClick = function(){majComptage()};
-edtValHauteur.onChange = function(){majComptage()};
-rdmaSelection.onClick = function(){ if (rdmaSelection.value === true) {
-                                                                        if(maSelection.length < 1){
-                                                                            alert(localize({en:"Impossible, nothing is selected !", fr:"Impossible, rien n\'est sélectionn\351 !"}));
-                                                                            rdmonDoc.value = true;
-                                                                            monChoixSelect = false;
-                                                                        } else {
-                                                                            monChoixSelect = true;
-                                                                            majComptage();
-                                                                        };
-                                                                } else {
-                                                                    monChoixSelect = false;
-                                                                    majComptage();
-                                                                };
-                                              };
-rdmonDoc.onClick = function(){ if (rdmaSelection.value === true) {
-                                                                        if(maSelection.length < 1){
-                                                                            alert(localize({en:"Impossible, nothing is selected !", fr:"Impossible, rien n\'est sélectionn\351 !"}));
-                                                                            rdmonDoc.value = true;
-                                                                            monChoixSelect = false;
-                                                                        } else {
-                                                                            monChoixSelect = true;
-                                                                            majComptage();
-                                                                        };
-                                                                } else {
-                                                                    monChoixSelect = false;
-                                                                    majComptage();
-                                                                };
+maSelection = app.activeDocument.selection;
+var objGroupes = 0;
+nBCPI = nbPI = comptage = 0;
+for(b=0;b<app.activeDocument.selection.length;b++){
+    if(app.activeDocument.selection[b].typename === "GroupItem"){
+        objGroupes = objGroupes+1
+   };
+    if(objGroupes>0){
+        alert( "Il y a " + objGroupes + " groupe\(s\) dans la sélection")
+        break;
+    };
+};
+if(app.activeDocument.selection.length < 1){
+    alert("Impossible, rien n\'est sélectionn\351 !");
+}else if (objGroupes===0){
+   //-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+    var boiteDial = new Window("dialog"); 
+    //-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+        boiteDial.text = {en:"Delete small objects", fr:"Suppression petits objets"};
+        boiteDial.orientation = "column"; 
+        boiteDial.alignChildren = ["left","top"]; 
+    //// Panneau_1
+    var Panneau1 = boiteDial.add("panel", [5,5,300,81], {en:"Apply To:", fr:"Appliquer \340 :"}); 
+        Panneau1.orientation = "column"; 
+        Panneau1.alignChildren = ["left","top"];
+    var ckbTraces =Panneau1.add("checkBox",[10,15,260,35],{en:"Path Items", fr:"Tracés"});
+    var ckbTTransp =Panneau1.add("checkBox",[10,40,260,60],{en:"Paths in Compound Path Items", fr:"Tracés inclus dans tracés transparents"});
+    ckbTraces.value = true;
+    ckbTTransp.value = true;
+    choixTypeTrace = 3;
+    //// Panneau_2
+    var Panneau2 = boiteDial.add("panel", [5,96,300,220],{en:"Smaller than:", fr:"Inf\351rieurs \340 : "}); 
+        Panneau2.orientation = "column"; 
+        Panneau2.alignChildren = ["left","top"]; 
+    /////// Groupe_Largeur
+    var groupeLargeur = Panneau2.add("group", [5,5,280,45]); 
+        groupeLargeur.orientation = "row"; 
+        groupeLargeur.alignChildren = ["left","center"]; 
+    var sttLargeur = groupeLargeur.add("statictext", [5,5,59,25], {en:"Width: ", fr:"Largeur : "}); 
+    var edtValLargeur = groupeLargeur.add('edittext',[62,5,110,27],1); 
+    edtValLargeur.characters = 4
+    var x = edtValLargeur.text;
+    var localiseUnit = {en:"inches", fr:"pouces"};
+    var lstUnit = groupeLargeur.add("dropdownlist", [115,5,180,25], ["mm",localiseUnit,"pixels"]);
+            lstUnit.selection = 0; 
+    /////// Diviseur_1
+    var diviseur_1 = Panneau2.add('panel', [5,40,185,42], undefined);
+    /////// Groupe_Et_Ou
+    var groupeEtOu = Panneau2.add("group",  [5,45,280,70]); 
+        groupeEtOu.orientation = "row"; 
+        groupeEtOu.alignChildren = ["left","center"]; 
+    var opEt = groupeEtOu.add("radiobutton",  [20,5,63,30], {en:"And", fr:"Et"}); 
+    var opOu = groupeEtOu.add("radiobutton",  [68,5,113,30], {en:"Or", fr:"Ou"}); 
+        opOu.value = true; 
+        if(opEt.value === true){
+            choixSelect= 2;
+            }else{
+            choixSelect= 1;};
+    /////// Diviseur_2
+    var diviseur_2 = Panneau2.add('panel', [5,75,185,77], undefined);
+    /////// Group_Height
+    var groupeHauteur = Panneau2.add("group",  [5,81,280,106],); 
+    var sttHauteur = groupeHauteur.add("statictext", [5,5,59,25], {en:"Height:", fr:"Hauteur"}); 
+    var edtValHauteur = groupeHauteur.add('edittext',[62,5,110,25],edtValLargeur.text);
+    edtValHauteur.characters = 4;
+    var y = edtValLargeur.text;
+    var reprUnit = groupeHauteur.add("statictext", [115,5,180,25], lstUnit.selection.text);
+    //// Panneau_3
+    var Panneau3 = boiteDial.add("panel",[5,111,300,160], {en:"Number of objects to delete:", fr: "Nb objets \340 supprimer : "}); 
+        Panneau3.orientation = "row"; 
+        Panneau3.alignChildren = ["left","top"];
+        Panneau3.graphics.backgroundColor = Panneau3.graphics.newBrush (Panneau3.graphics.BrushType.SOLID_COLOR,[0.5,0.5,0.5]);
+        Panneau3.graphics.foregroundColor = Panneau3.graphics.newPen (Panneau3.graphics.PenType.SOLID_COLOR,[1,1,1],1);
+        monCompteur = Panneau3.add("statictext",[5,10,300,30], "");
+        monCompteur.width = 300;
+        monCompteur.graphics.foregroundColor = monCompteur.graphics.newPen (boiteDial.graphics.PenType.SOLID_COLOR, [1,1, 1], 1);
+    /////// Actions utilisateur
+    ckbTraces.onClick = function(){if (ckbTraces.value === true){
+                                                        if (ckbTTransp.value === true){
+                                                            choixTypeTrace = 3;
+                                                        } else {
+                                                            choixTypeTrace = 1;
+                                                        };
+                                                    } else {
+                                                        if (ckbTTransp.value === true){
+                                                            choixTypeTrace = 2;
+                                                        } else {
+                                                            choixTypeTrace = 0;
+                                                        };
+                                                    };
+                                                    majComptage(choixTypeTrace,choixSelect)
                                                 };
-/////// Group_Buttons
-var groupeBoutons = boiteDial.add("group", undefined); 
-    groupeBoutons.orientation = "row"; 
-var btnOk = groupeBoutons.add("button", undefined, {en:"Validate", fr:"Valider"}, {name: 'ok'}); 
-       btnOk.onClick = function() { if(monChoixSelect) { 
-                                                           decoderUnite();
-                                                           supprPetitsObjSelection(x,y)
-                                                     } else {
-                                                           decoderUnite();
-                                                           supprPetitsObjFichier(x,y)
-                                                     };
-                                                 boiteDial.close()
-                                                 };
-var btnCancel = groupeBoutons.add("button", undefined, {en:"Cancel", fr:"Annuler"}, {name: 'cancel'});  
-        btnCancel.onClick = function() {boiteDial.close()};
-majComptage()
-boiteDial.show();
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//    Counter Update    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function majComptage() {
-    i = comptage = 0;
-        decoderUnite();
-        if(monChoixSelect) { 
-                ComptagePetitsObjetsSelection(x,y)
-        } else {
-                ComptagePetitsObjetsFichier(x,y)
-        };
-    monCompteur.text = comptage;
+    ckbTTransp.onClick = function(){if (ckbTTransp.value === true){
+                                                            if (ckbTraces.value === true){
+                                                                choixTypeTrace = 3;
+                                                            } else {
+                                                                choixTypeTrace = 2;
+                                                            };
+                                                        } else {
+                                                            if (ckbTraces.value === true){
+                                                                choixTypeTrace = 1;
+                                                        } else {
+                                                            choixTypeTrace = 0;
+                                                            };
+                                                        };
+                                                        majComptage(choixTypeTrace,choixSelect)
+                                                    };
+    edtValLargeur.onChange = function(){majComptage(choixTypeTrace,choixSelect)};
+    lstUnit.onChange = function(){reprUnit.text=lstUnit.selection.text
+                                                    majComptage(choixTypeTrace,choixSelect)};      
+    opOu.onClick = function(){if(opOu.value = true){
+                                                choixSelect= 1;
+                                                majComptage(choixTypeTrace,choixSelect)
+                                                }else{
+                                                choixSelect= 2;
+                                                majComptage(choixTypeTrace,choixSelect)
+                                                };
+                                                };
+    opEt.onClick = function(){if(opEt.value = true){
+                                                choixSelect= 2;
+                                                majComptage(choixTypeTrace,choixSelect)
+                                                }else{
+                                                choixSelect= 1;
+                                                majComptage(choixTypeTrace,choixSelect)
+                                                };
+                                                };
+    edtValHauteur.onChange = function(){majComptage(choixTypeTrace,choixSelect)};
+    /////// Groupe_Boutons
+    var groupeBoutons = boiteDial.add("group", undefined); 
+        groupeBoutons.orientation = "row"; 
+    var btnOk = groupeBoutons.add("button", undefined, {en:"Validate", fr:"Valider"}, {name: 'ok'});
+           btnOk.onClick = function() {  decoderUnite();
+                                                        if (ckbTraces.value === true) {
+                                                            if (ckbTTransp.value === true) {
+                                                                SupprTracesTransparents(x,y,choixSelect,choixTypeTrace)
+                                                                SupprTraces(x,y,choixSelect)
+                                                            } else {
+                                                                SupprTraces(x,y,choixSelect)
+                                                            };
+                                                        } else {
+                                                            if (ckbTTransp.value === true) {
+                                                                SupprTracesTransparents(x,y,choixSelect,choixTypeTrace)
+                                                            };
+                                                        };
+                                                    boiteDial.close()
+                                                    };
+    var btnCancel = groupeBoutons.add("button", undefined, {en:"Cancel", fr:"Annuler"}, {name: 'cancel'}); 
+            btnCancel.onClick = function() {boiteDial.close()};
+    majComptage(choixTypeTrace,choixSelect)
+    boiteDial.show();
 };
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//    Delete small objects in the selection    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function supprPetitsObjSelection(){
-        if (x != null){
-            if (y != null ){
-                if (opEt.value) {
-                    for (i =0;i<maSelection.length;i++){
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+function SupprTraces(x,y){
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+var i,j;
+    if (x != null){
+        if (y != null ){
+            if (choixSelect === 2) {
+                for (i =0;i<maSelection.length;i++){
+                    if(maSelection[i].typename === "PathItem"){
                         if (maSelection[i].width<x && maSelection[i].height<y ){
-                            maSelection[i].remove();
-                            comptage = comptage + 1;
+                            maSelection[i].selected = true
+                        } else {
+                            maSelection[i].selected = false;
                         };
                     };
-                } else {
-                    for (i =0;i<maSelection.length;i++){
+                };
+            } else {
+                for (i =0;i<maSelection.length;i++){
+                    if(maSelection[i].typename === "PathItem"){
                         if (maSelection[i].width<x || maSelection[i].height<y){
-                            maSelection[i].remove();
-                            comptage = comptage + 1;
+                            maSelection[i].selected = true
+                        } else {
+                            maSelection[i].selected = false;
                         };
                     };
                 };
-            } else {
-                for (i =0;i<maSelection.length;i++){
+            };
+        } else {
+            for (i =0;i<maSelection.length;i++){
+                if(maSelection[i].typename === "PathItem"){
                     if (maSelection[i].width<x ){
-                        maSelection[i].remove();
-                        comptage = comptage + 1;
+                            maSelection[i].selected = true
+                        } else {
+                            maSelection[i].selected = false;
                     };
                 };
             };
-        } else {
-             if (y != null){
-                for (i =0;i<maSelection.length;i++){
+        };
+    } else {
+         if (y != null){
+            for (i =0;i<maSelection.length;i++){
+                if(maSelection[i].typename === "PathItem"){
                     if (maSelection[i].height<y ){
-                        maSelection[i].remove();
-                        comptage = comptage + 1;
-                    };
-                };
-            } else {
-                    alert(localize({en:"At least 1 of the 2 Width/Height fields must contain a value", fr:"Au moins 1 des 2 champs hauteur/largeur doit contenir une valeur"}));
-            };
-        };
-};
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//    Delete small objects troughout the file    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function supprPetitsObjFichier(){
-        if (x != null){
-            if (y != null && opEt.value === true){
-                for (i = monFichier.pageItems.length-1;i>=0;i--){
-                    if (monFichier.pageItems[i].width<x && monFichier.pageItems[i].height<y ){
-                        monFichier.pageItems[i].remove();
-                    };
-                };
-            } else {
-                for (i = monFichier.pageItems.length-1;i>=0;i--){
-                    if (monFichier.pageItems[i].width<x ){
-                        monFichier.pageItems[i].remove();
+                            maSelection[i].selected = true
+                        } else {
+                            maSelection[i].selected = false;
                     };
                 };
             };
         } else {
-             if (y != null){
-                for (i = monFichier.pageItems.length-1;i>=0;i--){
-                    if (monFichier.pageItems[i].height<y ){
-                        monFichier.pageItems[i].remove();
+                alert(localize({en:"At least 1 of the 2 Width/Height fields must contain a value", fr:"Au moins 1 des 2 champs hauteur/largeur doit contenir une valeur"}));
+        };
+    };
+    if( maSelection.length>0){
+        app.executeMenuCommand('clear');
+     };
+app.redraw();
+};
+//------------------------------------------------------------------------------------------------------------------------------------------------------------
+function SupprTracesTransparents(x,y,choixSelectchoixTypeTrace){
+//------------------------------------------------------------------------------------------------------------------------------------------------------------
+    var i = j =h = 0;
+    if (x != null){
+        if (y != null ){
+            if (choixSelect === 2) {
+               for (j=0;j<maSelection.length;j++){
+                    if(maSelection[j].typename === "CompoundPathItem"){
+                        for (i =0;i<maSelection[j].pathItems.length;i++){
+                            if(maSelection[j].pathItems[i].width === maSelection[j].width && maSelection[j].pathItems[i].height === maSelection[j].height){
+                               maSelection[j].pathItems[i].selected = false;
+                            }else if (maSelection[j].pathItems[i].width <x && maSelection[j].pathItems[i].height<y){
+                                maSelection[j].pathItems[i].selected = true;
+                            } else {
+                                maSelection[j].pathItems[i].selected = false;
+                            };
+                        };
                     };
                 };
-            } else {
-                    alert(localize({en:"At least 1 of the 2 Width/Height fields must contain a value", fr:"Au moins 1 des 2 champs hauteur/largeur doit contenir une valeur"}));
+           } else {
+                for (j=0;j<maSelection.length;j++){
+                    if(maSelection[j].typename === "CompoundPathItem"){
+                        for (i =0;i<maSelection[j].pathItems.length;i++){
+                            if(maSelection[j].pathItems[i].width === maSelection[j].width && maSelection[j].pathItems[i].height === maSelection[j].height){
+                               maSelection[j].pathItems[i].selected = false;
+                            }else if (maSelection[j].pathItems[i].width<x || maSelection[j].pathItems[i].height<y){
+                                maSelection[j].pathItems[i].selected = true;
+                            } else {
+                                maSelection[j].pathItems[i].selected = false;
+
+                            };
+                        };
+                    };
+                };
             };
+        } else {
+            for (j=0;j<maSelection.length;j++){
+                if(maSelection[j].typename === "CompoundPathItem"){
+                    for (i =0;i<maSelection[j].pathItems.length;i++){
+                        if (maSelection[j].pathItems[i].width<x){
+                                maSelection[j].pathItems[i].selected = true;
+                            } else {
+                                maSelection[j].pathItems[i].selected = false;
+                        };
+                    };
+                };
+    };
         };
+    } else {
+         if (y != null){
+             for (j=0;j<maSelection.length;j++){
+                    if(maSelection[j].typename === "CompoundPathItem"){
+                        for (i =0;i<maSelection[j].pathItems.length;i++){
+                            if (maSelection[j].pathItems[i].height<y){
+                                maSelection[j].pathItems[i].selected = true;
+                            } else {
+                                maSelection[j].pathItems[i].selected = false;
+                            };
+                        };
+                    };
+                };
+        } else {
+                alert(localize({en:"At least 1 of the 2 Width/Height fields must contain a value", fr:"Au moins 1 des 2 champs hauteur/largeur doit contenir une valeur"}));
+        };
+    };
+if(choixTypeTrace===2){
+    if(maSelection.length>0){
+        app.executeMenuCommand('clear');
+     };
 };
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//    Decode Unit    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+};
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------
 function decoderUnite(){
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------
     switch (lstUnit.selection.index) {
         case 0 :
             x = edtValLargeur.text != "" ? edtValLargeur.text*2.834645 : null;
@@ -225,81 +317,58 @@ function decoderUnite(){
             break;
         };
 };
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//    Count small objects in the selection    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function ComptagePetitsObjetsSelection(x,y){
-        if (x != null){
-            if (y != null ){
-                if (opEt.value) {
-                    for (i =0;i<maSelection.length;i++){
-                        if (maSelection[i].width<x && maSelection[i].height<y ){
-                            comptage = comptage + 1;
-                        };
-                    };
-                } else {
-                    for (i =0;i<maSelection.length;i++){
-                        if (maSelection[i].width<x || maSelection[i].height<y){
-                            comptage = comptage + 1;
-                        };
-                    };
+//------------------------------------------------------------------------------------------------------------------------------------------------------------
+function majComptage(choixTypeTrace,choixSelect){
+//------------------------------------------------------------------------------------------------------------------------------------------------------------
+    decoderUnite();
+    var i = j = k = nBPI = nBCPI = 0;
+    if(choixSelect===1){
+        for (k=0;k<app.activeDocument.selection.length;k++){
+            if(app.activeDocument.selection[k].typename === "PathItem"){
+                if (app.activeDocument.selection[k].width<x || app.activeDocument.selection[k].height<y){
+                     nBPI = nBPI+1;
                 };
-            } else {
-                for (i =0;i<maSelection.length;i++){
-                    if (maSelection[i].width<x ){
-                        comptage = comptage + 1;
-                    };
-                };
-            };
-        } else {
-             if (y != null){
-                for (i =0;i<maSelection.length;i++){
-                    if (maSelection[i].height<y ){
-                        comptage = comptage + 1;
-                    };
-                };
-            } else {
-                    alert(localize({en:"At least 1 of the 2 Width/Height fields must contain a value", fr:"Au moins 1 des 2 champs hauteur/largeur doit contenir une valeur"}));
             };
         };
-        return (comptage);
-};
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//    Delete small objects in the file    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function ComptagePetitsObjetsFichier(x,y){
-        if (x != null){
-            if (y != null ){
-                if (opEt.value) {
-                    for (i =0;i<monFichier.pageItems.length;i++){
-                        if (monFichier.pageItems[i].width<x && monFichier.pageItems[i].height<y ){
-                            comptage = comptage + 1;
-                        };
+        for (j=0;j<app.activeDocument.selection.length;j++){
+            if(app.activeDocument.selection[j].typename === "CompoundPathItem"){
+                for (i =0;i<app.activeDocument.selection[j].pathItems.length;i++){
+                    if (app.activeDocument.selection[j].pathItems[i].width<x || app.activeDocument.selection[j].pathItems[i].height<y){
+                         nBCPI = nBCPI+1;
                     };
-                } else {
-                    for (i =0;i<monFichier.pageItems.length;i++){
-                        if (monFichier.pageItems[i].width<x || monFichier.pageItems[i].height<y){
-                            comptage = comptage + 1;
-                        };
-                    };
-                };
-            } else {
-                for (i =0;i<monFichier.pageItems.length;i++){
-                    if (monFichier.pageItems[i].width<x ){
-                        comptage = comptage + 1;
-                    };
-                };
-            };
-        } else {
-             if (y != null){
-                for (i =0;i<monFichier.pageItems.length;i++){
-                    if (monFichier.pageItems[i].height<y ){
-                        comptage = comptage + 1;
-                    };
-                };
-            } else {
-                    alert(localize({en:"At least 1 of the 2 Width/Height fields must contain a value", fr:"Au moins 1 des 2 champs hauteur/largeur doit contenir une valeur"}));
+                 };
             };
         };
-        return (comptage);
+    }else{
+        for (k=0;k<app.activeDocument.selection.length;k++){
+            if(app.activeDocument.selection[k].typename === "PathItem"){
+                if (app.activeDocument.selection[k].width<x && app.activeDocument.selection[k].height<y){
+                     nBPI = nBPI+1;
+                };
+            };
+        };
+        for (j=0;j<app.activeDocument.selection.length;j++){
+            if(app.activeDocument.selection[j].typename === "CompoundPathItem"){
+                for (i =0;i<app.activeDocument.selection[j].pathItems.length;i++){
+                    if (app.activeDocument.selection[j].pathItems[i].width<x && app.activeDocument.selection[j].pathItems[i].height<y){
+                         nBCPI = nBCPI+1;
+                    };
+                 };
+            };
+        };
+    };
+   switch(choixTypeTrace) {
+        case 0:
+            monCompteur.text = {en:"0 PathItem and 0 in CompoundPathItem", fr:"0 tracé et 0 dans tracé transparent"};
+            break;
+        case 1:
+            monCompteur.text = {en:nBPI + " PathItem and 0 in CompoundPathItem", fr:nBPI + " tracés et 0 dans tracé transparent"};
+            break;
+        case 2:
+            monCompteur.text = {en:"0 PathItem and " + nBCPI + " in CompoundPathItem", fr:"0 tracé et " + nBCPI + " dans tracés transparents"};
+            break;
+        case 3:
+            monCompteur.text = {en:nBPI + " PathItems and " + nBCPI + " in CompoundPathItems", fr:nBPI + " tracés et " + nBCPI + " dans tracés transparents"};
+            break;
+    };
 };
