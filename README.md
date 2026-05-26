@@ -45,6 +45,10 @@ Couleur_Calques
 -------------------------------------------------------------------------------------------------------------------------------
 	Change the working colour of the layers and sub layers containing the selected objects
 
+CrossHatching
+-------------------------------------------------------------------------------------------------------------------------------
+	A set of scripts to transform a raster image into vector crosshatching
+
 DessDuss
 -------------------------------------------------------------------------------------------------------------------------------
 	Displays a flotting palette that allows you to quickly change the thickness, color and line
