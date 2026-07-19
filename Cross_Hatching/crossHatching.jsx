@@ -15,6 +15,19 @@ $.localize = true;
 $.locale =null;
 if($.locale.substr(0,2) != "fr"){$.locale = "en"};
 coeff = 2.834645;
+var boiteDialTH = new Window ('dialog', {en:"Hatching Type",fr:"Type de hachures"});
+boiteDialTH.alignChildren = "left";
+boiteDialTH.spacing = 5;
+var grpFormeHachures = boiteDialTH.add("group")
+var chkDroites = grpFormeHachures.add("radiobutton",undefined,{en:"Straight lines",fr:"Droites"});
+var chkCourbes = grpFormeHachures.add("radiobutton",undefined,{en:"Curves",fr:"Courbes"});
+chkCourbes.value = true;
+formeHachures = "Courbes";
+chkDroites.onClick = function(){formeHachures = "Droites"};
+chkCourbes.onClick = function(){formeHachures = "Courbes"};
+var grpBoutons = boiteDialTH.add("group")
+var btnOk = boiteDialTH.add("button", undefined,{en:"Ok",fr:"Ok"}, {name: 'ok'});
+boiteDialTH.show();
 var nbSel = app.activeDocument.selection.length;
 $.hiresTimer;
 var tabPaths = [];
@@ -57,6 +70,7 @@ for(a=0;a<tabComs.length;a++){
     };
     choixCalque()
 };
+app.executeMenuCommand('deselectall');
 var time = $.hiresTimer; // stop Chrono
 var monTemps = MillisecondesEnTempsLisible(time);
 if (time<60){
@@ -100,22 +114,46 @@ function recueilDonnees(couleurCalque) {
     switch(couleurCalque){
            case "Noir-5" :
                         espacement = 1.2*coeff;epTrait = 0.35*coeff;angle = -5;
-                        poignees_p1_x = 0;poignees_p1_y = 0;poignees_p2_x = 0;poignees_p2_y = 0;break;
+                        if(formeHachures === "Droites"){
+                            poignees_p1_x = 0;poignees_p1_y = 0;poignees_p2_x = 0;poignees_p2_y = 0;
+                        }else{
+                            poignees_p1_x = perim/1.8;poignees_p1_y =perim/1.8;poignees_p2_x = perim/(-1.8);poignees_p2_y = 0;
+                        };break;
            case "Noir-55" :
                         espacement = 1.2*coeff;epTrait = 0.35*coeff;angle = -55;
-                        poignees_p1_x = 0;poignees_p1_y = 0;poignees_p2_x = 0;poignees_p2_y = 0;break;
+                        if(formeHachures === "Droites"){
+                            poignees_p1_x = 0;poignees_p1_y = 0;poignees_p2_x = 0;poignees_p2_y = 0;break;
+                        }else{
+                            poignees_p1_x = perim/1.8;poignees_p1_y = 0;poignees_p2_x = perim/(-1.8);poignees_p2_y = perim/1.8
+                        };break;
            case "Noir+62" :
                         espacement = 1.2*coeff;epTrait = 0.35*coeff;angle = 62;
-                        poignees_p1_x = 0;poignees_p1_y = 0;poignees_p2_x = 0;poignees_p2_y = 0;break;
+                        if(formeHachures === "Droites"){
+                            poignees_p1_x = 0;poignees_p1_y = 0;poignees_p2_x = 0;poignees_p2_y = 0;break;
+                        }else{
+                            poignees_p1_x = perim/1.8;poignees_p1_y =perim/1.8;poignees_p2_x = perim/(-1.8);poignees_p2_y = 0;
+                        };break;
            case "Gris_Foncé-55" :
                         espacement = 1.5*coeff;epTrait = 0.35*coeff;angle = -55;
-                        poignees_p1_x = 0;poignees_p1_y = 0;poignees_p2_x = 0;poignees_p2_y = 0;break;
+                        if(formeHachures === "Droites"){
+                            poignees_p1_x = 0;poignees_p1_y = 0;poignees_p2_x = 0;poignees_p2_y = 0;break;
+                        }else{
+                            poignees_p1_x = perim/1.8;poignees_p1_y = 0;poignees_p2_x = perim/(-1.8);poignees_p2_y = perim/1.8
+                        };break;
            case "Gris_Foncé+62" :
                         espacement = 1.5*coeff;epTrait = 0.35*coeff;angle = 62;
-                        poignees_p1_x = 0;poignees_p1_y = 0;poignees_p2_x = 0;poignees_p2_y = 0;break;
+                                                if(formeHachures === "Droites"){
+                            poignees_p1_x = 0;poignees_p1_y = 0;poignees_p2_x = 0;poignees_p2_y = 0;break;
+                        }else{
+                            poignees_p1_x = perim/1.8;poignees_p1_y =perim/1.8;poignees_p2_x = perim/(-1.8);poignees_p2_y = 0;
+                        };break;;
            case "Gris_Clair+62" :
                         espacement = 1.5*coeff;epTrait = 0.35*coeff;angle = 62;
-                        poignees_p1_x = 0;poignees_p1_y = 0;poignees_p2_x = 0;poignees_p2_y = 0;break;
+                                                if(formeHachures === "Droites"){
+                            poignees_p1_x = 0;poignees_p1_y = 0;poignees_p2_x = 0;poignees_p2_y = 0;break;
+                        }else{
+                            poignees_p1_x = perim/1.8;poignees_p1_y =perim/1.8;poignees_p2_x = perim/(-1.8);poignees_p2_y = 0;
+                        };break;
            };
 };
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
